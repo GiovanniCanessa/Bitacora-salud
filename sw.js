@@ -1,6 +1,6 @@
 // Service worker mínimo: permite instalar la app y abrir la interfaz sin conexión.
 // Los datos (Supabase) siempre se piden a la red; no se guardan en caché.
-const CACHE = "bitacora-v1";
+const CACHE = "bitacora-v3";
 const SHELL = ["./", "index.html", "manifest.webmanifest", "icon-192.png", "icon-512.png"];
 
 self.addEventListener("install", (e) => {

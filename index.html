@@ -16,8 +16,9 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <style>
 :root{
-  --bg:#E9EEF1; --surface:#FFFFFF; --ink:#15212C; --muted:#5A6A77;
-  --line:#CCD6DD; --accent:#244E73; --accent-ink:#FFFFFF; --soft:#DCE6EE; --danger:#A3322A;
+  --bg:#F2F5F7; --surface:#FFFFFF; --ink:#111A22; --muted:#46535E;
+  --line:#B9C6D0; --accent:#1F4E79; --accent-ink:#FFFFFF; --soft:#E3ECF3; --danger:#9E2A22;
+  --fs:19px;
   color-scheme: light;
   box-sizing:border-box;
   padding-top:env(safe-area-inset-top,0px);
@@ -25,104 +26,98 @@
 }
 @media (prefers-color-scheme: dark){
   :root{
-    --bg:#0F1820; --surface:#18242E; --ink:#E4ECF1; --muted:#93A4B1;
-    --line:#2C3B47; --accent:#7FB0DA; --accent-ink:#0F1820; --soft:#1F3141; --danger:#E0786F;
+    --bg:#0F1820; --surface:#19252F; --ink:#F1F5F8; --muted:#B4C2CD;
+    --line:#3A4B58; --accent:#8CBBE3; --accent-ink:#0F1820; --soft:#223443; --danger:#F08A80;
     color-scheme: dark;
   }
 }
+:root.big{--fs:23px}
 *,*::before,*::after{box-sizing:inherit}
-html{scroll-padding-top:env(safe-area-inset-top,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px);font-size:var(--fs)}
 body{
   margin:0; background:var(--bg); color:var(--ink);
   font-family:"Atkinson Hyperlegible", system-ui, -apple-system, "Segoe UI", sans-serif;
-  font-size:17px; line-height:1.45;
+  font-size:1rem; line-height:1.55;
 }
 button,input,select,textarea{font:inherit;color:inherit}
-:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
-.wrap{max-width:720px;margin:0 auto;padding:20px 16px 96px}
+:focus-visible{outline:4px solid var(--accent);outline-offset:3px}
+.wrap{max-width:820px;margin:0 auto;padding:20px 18px 80px}
 [hidden]{display:none!important}
 
 /* Encabezado */
-header.top{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin:8px 0 18px}
-header.top h1{font-size:1.6rem;margin:0;letter-spacing:-.01em}
-.link-btn{background:none;border:0;color:var(--muted);text-decoration:underline;cursor:pointer;padding:4px}
+header.top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin:8px 0 20px}
+header.top h1{font-size:1.7rem;margin:0;line-height:1.2}
+.top-tools{display:flex;gap:10px;flex-wrap:wrap}
 
-/* Controles */
-.controls{display:grid;grid-template-columns:1fr auto;gap:8px;margin-bottom:8px}
-.controls input,.controls select{
-  width:100%;padding:12px 14px;border:1px solid var(--line);border-radius:10px;background:var(--surface)
-}
-.count{color:var(--muted);font-size:.9rem;margin:4px 2px 18px}
-
-/* Línea de tiempo por año */
-.year{
-  position:sticky;top:env(safe-area-inset-top,0px);z-index:2;background:var(--bg);
-  font-size:2.6rem;font-weight:700;line-height:1;color:var(--accent);
-  padding:14px 0 10px;margin:0;border-bottom:2px solid var(--accent)
-}
-.entries{list-style:none;margin:0 0 28px;padding:0}
-.entry{display:grid;grid-template-columns:64px 1fr;gap:14px;padding:16px 0;border-bottom:1px solid var(--line)}
-.date{text-align:right;padding-top:2px}
-.date .d{display:block;font-size:1.7rem;font-weight:700;line-height:1}
-.date .m{display:block;color:var(--muted);font-size:.9rem}
-.entry h3{margin:0 0 2px;font-size:1.1rem}
-.meta{color:var(--muted);margin:0}
-.notes{margin:8px 0 0;white-space:pre-wrap}
-.code{margin:10px 0 0;display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:.95rem}
-.code span{padding:3px 8px;border-radius:6px;background:var(--soft);letter-spacing:.04em}
-.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
-
-/* Botones */
-.btn{border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:9px 14px;cursor:pointer}
-.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:700}
+/* Botones grandes */
+.btn{min-height:52px;border:2px solid var(--line);background:var(--surface);border-radius:12px;padding:10px 18px;cursor:pointer;font-weight:700}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
 .btn.danger{color:var(--danger);border-color:var(--danger)}
-.btn.small{padding:4px 10px;font-size:.9rem}
-.fab{
-  position:fixed;right:max(16px,calc(50% - 344px));bottom:calc(20px + env(safe-area-inset-bottom,0px));
-  padding:14px 20px;border-radius:999px;font-size:1rem;box-shadow:0 6px 18px rgba(20,40,60,.25)
-}
+.btn.big{width:100%;font-size:1.1rem;min-height:60px}
+.btn.plain{border-color:transparent;background:none;text-decoration:underline;font-weight:400;color:var(--muted);min-height:44px;padding:8px 10px}
+
+/* Filtros */
+.filters{background:var(--surface);border:2px solid var(--line);border-radius:14px;margin:18px 0 10px}
+.filters summary{cursor:pointer;padding:16px 18px;font-weight:700;font-size:1.1rem;list-style:none}
+.filters summary::-webkit-details-marker{display:none}
+.filters summary::before{content:"+ ";}
+.filters[open] summary::before{content:"− ";}
+.filter-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px 16px;padding:0 18px 18px}
+@media (max-width:560px){.filter-grid{grid-template-columns:1fr}}
+.filter-grid .full{grid-column:1 / -1}
+.filter-grid label{margin:0 0 6px;font-weight:700}
+.filter-grid input,.filter-grid select{width:100%;min-height:52px;padding:10px 12px;border:2px solid var(--line);border-radius:10px;background:var(--surface)}
+
+.count{font-size:1.05rem;margin:14px 2px 6px}
+.count strong{color:var(--accent)}
+
+/* Año */
+.year{font-size:1.5rem;margin:28px 0 12px;padding-bottom:6px;border-bottom:3px solid var(--accent)}
+
+/* Ficha de cada atención */
+.card{background:var(--surface);border:2px solid var(--line);border-radius:14px;padding:18px 20px;margin:0 0 16px}
+.card .when{margin:0 0 4px;color:var(--muted);font-size:1.05rem}
+.card h3{margin:0 0 12px;font-size:1.35rem;line-height:1.3}
+.card dl{display:grid;grid-template-columns:max-content 1fr;gap:8px 16px;margin:0}
+.card dt{font-weight:700}
+.card dd{margin:0;overflow-wrap:anywhere}
+@media (max-width:480px){.card dl{grid-template-columns:1fr;gap:0}.card dd{margin-bottom:10px}}
+.code-val{display:inline-block;padding:2px 10px;border-radius:8px;background:var(--soft);font-size:1.1rem;letter-spacing:.06em;margin-right:8px}
+.card .notes{white-space:pre-wrap}
+.card .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+.card .actions .btn{flex:1 1 220px}
 
 /* Vacío */
-.empty{padding:40px 8px;text-align:left}
-.empty h2{margin:0 0 6px}
-.empty p{color:var(--muted);margin:0 0 16px;max-width:46ch}
+.empty{background:var(--surface);border:2px dashed var(--line);border-radius:14px;padding:28px 22px}
+.empty h2{margin:0 0 8px}
+.empty p{margin:0 0 18px}
 
 /* Login */
-.login{max-width:380px;margin:12vh auto 0;padding:0 16px}
-.login h1{font-size:2rem;margin:0 0 4px}
-.login p{color:var(--muted);margin:0 0 22px}
+.login{max-width:440px;margin:10vh auto 0;padding:0 18px}
+.login h1{font-size:2rem;margin:0 0 6px}
+.login p{margin:0 0 22px;color:var(--muted)}
 
 /* Formularios */
-label{display:block;font-weight:700;font-size:.95rem;margin:14px 0 6px}
+label{display:block;font-weight:700;margin:16px 0 6px}
 label small{font-weight:400;color:var(--muted)}
-.field{width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
-textarea.field{min-height:84px;resize:vertical}
-.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-@media (max-width:480px){.row2{grid-template-columns:1fr}}
-.error{color:var(--danger);margin:12px 0 0;min-height:1.2em}
+.field{width:100%;min-height:52px;padding:10px 12px;border:2px solid var(--line);border-radius:10px;background:var(--surface)}
+textarea.field{min-height:110px;resize:vertical}
+.error{color:var(--danger);margin:12px 0 0;min-height:1.2em;font-weight:700}
 
-dialog{
-  width:min(560px,100vw - 24px);max-height:calc(100dvh - 24px);border:0;border-radius:16px;
-  padding:0;background:var(--surface);color:var(--ink)
-}
-dialog::backdrop{background:rgba(10,20,30,.5)}
-dialog form{padding:20px 20px 16px}
-dialog h2{margin:0 0 4px}
-.dlg-actions{display:flex;justify-content:space-between;gap:8px;margin-top:20px;flex-wrap:wrap}
-.dlg-actions .right{display:flex;gap:8px;margin-left:auto}
+dialog{width:min(620px,100vw - 20px);max-height:calc(100dvh - 20px);border:0;border-radius:16px;padding:0;background:var(--surface);color:var(--ink)}
+dialog::backdrop{background:rgba(10,20,30,.55)}
+dialog form{padding:22px}
+dialog h2{margin:0 0 4px;font-size:1.4rem}
+.dlg-actions{display:flex;gap:10px;margin-top:22px;flex-wrap:wrap}
+.dlg-actions .btn{flex:1 1 140px}
 
-/* Aviso */
-.toast{
-  position:fixed;left:50%;bottom:calc(88px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);
-  background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:10px;font-size:.95rem;z-index:10;max-width:90vw
-}
-.brand{color:var(--muted);font-size:.85rem;margin-top:32px}
-.config-warning{background:var(--soft);border-left:4px solid var(--danger);padding:14px 16px;border-radius:8px}
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:14px 20px;border-radius:12px;font-size:1.05rem;z-index:10;max-width:92vw;text-align:center}
+.brand{color:var(--muted);font-size:.9rem;margin-top:36px}
+.config-warning{background:var(--soft);border-left:5px solid var(--danger);padding:16px 18px}
 </style>
 </head>
 <body>
 
-<!-- Aviso de configuración -->
 <div id="configView" class="wrap" hidden>
   <div class="config-warning">
     <strong>Falta configurar Supabase.</strong>
@@ -130,10 +125,9 @@ dialog h2{margin:0 0 4px}
   </div>
 </div>
 
-<!-- Login -->
 <div id="loginView" class="login" hidden>
   <h1>Bitácora de salud</h1>
-  <p>Tus atenciones, exámenes y códigos de acceso en un solo lugar.</p>
+  <p>Sus atenciones, exámenes y códigos de acceso en un solo lugar.</p>
   <form id="loginForm">
     <label for="email">Correo</label>
     <input class="field" id="email" type="email" autocomplete="email" required>
@@ -145,33 +139,47 @@ dialog h2{margin:0 0 4px}
   <p class="brand">Una app de Aurentya</p>
 </div>
 
-<!-- App -->
 <div id="appView" class="wrap" hidden>
   <header class="top">
-    <h1>Bitácora de salud</h1>
-    <div>
-      <button class="link-btn" id="exportBtn" type="button">Exportar CSV</button>
-      <button class="link-btn" id="logoutBtn" type="button">Salir</button>
+    <h1>Mis atenciones médicas</h1>
+    <div class="top-tools">
+      <button class="btn plain" id="fontBtn" type="button">Agrandar letra</button>
+      <button class="btn plain" id="exportBtn" type="button">Descargar copia</button>
+      <button class="btn plain" id="logoutBtn" type="button">Cerrar sesión</button>
     </div>
   </header>
 
-  <div class="controls">
-    <input id="search" type="search" placeholder="Buscar: rodillas, Vidal, resonancia…" aria-label="Buscar">
-    <select id="filterEsp" aria-label="Filtrar por especialidad"><option value="">Todas</option></select>
-  </div>
-  <p class="count" id="count"></p>
+  <button class="btn primary big" id="addBtn" type="button">+ Registrar una atención nueva</button>
 
+  <details class="filters" id="filtersBox">
+    <summary>Buscar y filtrar</summary>
+    <div class="filter-grid">
+      <div class="full">
+        <label for="search">Buscar una palabra</label>
+        <input id="search" type="search" placeholder="Por ejemplo: rodilla">
+      </div>
+      <div><label for="fYear">Año</label><select id="fYear"><option value="">Todos los años</option></select></div>
+      <div><label for="fServicio">Servicio o examen</label><select id="fServicio"><option value="">Todos</option></select></div>
+      <div><label for="fEsp">Especialidad</label><select id="fEsp"><option value="">Todas</option></select></div>
+      <div><label for="fLugar">Lugar</label><select id="fLugar"><option value="">Todos</option></select></div>
+      <div><label for="fMedico">Médico</label><select id="fMedico"><option value="">Todos</option></select></div>
+      <div><label for="fOrder">Orden</label><select id="fOrder"><option value="desc">Más recientes primero</option><option value="asc">Más antiguas primero</option></select></div>
+      <div><label for="fFrom">Desde la fecha</label><input id="fFrom" type="date"></div>
+      <div><label for="fTo">Hasta la fecha</label><input id="fTo" type="date"></div>
+      <div class="full"><button class="btn" id="clearBtn" type="button" style="width:100%">Quitar todos los filtros</button></div>
+    </div>
+  </details>
+
+  <p class="count" id="count" aria-live="polite"></p>
   <div id="list"></div>
-  <p class="brand">Bitácora de salud, por Aurentya</p>
 
-  <button class="btn primary fab" id="addBtn" type="button">Registrar atención</button>
+  <p class="brand">Bitácora de salud, por Aurentya</p>
 </div>
 
-<!-- Formulario -->
 <dialog id="dlg">
   <form id="entryForm" method="dialog">
     <h2 id="dlgTitle">Registrar atención</h2>
-    <div class="row2">
+    <div>
       <div>
         <label for="f_fecha">Fecha</label>
         <input class="field" id="f_fecha" type="date" required>
@@ -183,8 +191,9 @@ dialog h2{margin:0 0 4px}
       </div>
     </div>
     <label for="f_servicio">Servicio o examen</label>
-    <input class="field" id="f_servicio" placeholder="Radiografía de ambas rodillas">
-    <div class="row2">
+    <input class="field" id="f_servicio" list="servicioList" placeholder="Radiografía de ambas rodillas">
+    <datalist id="servicioList"></datalist>
+    <div>
       <div>
         <label for="f_lugar">Lugar</label>
         <input class="field" id="f_lugar" list="lugarList" required placeholder="Clínica Ciudad del Mar">
@@ -204,11 +213,9 @@ dialog h2{margin:0 0 4px}
     <textarea class="field" id="f_notas" placeholder="Indicaciones, diagnóstico, próximos pasos…"></textarea>
     <p class="error" id="formError" role="alert"></p>
     <div class="dlg-actions">
-      <button class="btn danger" id="deleteBtn" type="button" hidden>Eliminar</button>
-      <div class="right">
-        <button class="btn" id="cancelBtn" type="button">Cancelar</button>
-        <button class="btn primary" id="saveBtn" type="submit">Guardar</button>
-      </div>
+      <button class="btn primary" id="saveBtn" type="submit">Guardar</button>
+      <button class="btn" id="cancelBtn" type="button">Cancelar</button>
+      <button class="btn danger" id="deleteBtn" type="button" hidden>Eliminar esta atención</button>
     </div>
   </form>
 </dialog>
@@ -217,9 +224,9 @@ dialog h2{margin:0 0 4px}
 
 <script>
 // ===== Configuración =====
-// Ambos valores están en Supabase > Project Settings > API.
-// La anon key es pública por diseño: la seguridad la dan las políticas RLS del schema.sql.
-const SUPABASE_URL = "https://gtgkosycdnmbkmcgdiev.supabase.co";
+// Ambos valores están en Supabase (botón Connect o Project Settings > API Keys).
+// La publishable key es pública por diseño: la seguridad la dan las políticas RLS del schema.sql.
+const SUPABASE_URL = "https:///gtgkosycdnmbkmcgdiev.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_Va4OCp-mFp0adj1musfvGw_7Fu8IglJ";
 
 // ===== Utilidades =====
@@ -229,16 +236,27 @@ const show = (id) => ["configView","loginView","appView"].forEach(v => $(v).hidd
 let toastTimer;
 function toast(msg){
   const t = $("toast"); t.textContent = msg; t.hidden = false;
-  clearTimeout(toastTimer); toastTimer = setTimeout(() => t.hidden = true, 2600);
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => t.hidden = true, 4500);
 }
-function fmtDate(iso){
-  const d = new Date(iso + "T00:00:00");
-  return { day: d.getDate(), month: d.toLocaleDateString("es-CL", { month: "short" }).replace(".", ""), year: d.getFullYear() };
+function longDate(iso){
+  return new Date(iso + "T00:00:00").toLocaleDateString("es-CL", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
 }
 function safeUrl(u){
   try { const x = new URL(u); return (x.protocol === "https:" || x.protocol === "http:") ? x.href : null; }
   catch { return null; }
 }
+
+// Tamaño de letra (se recuerda en este dispositivo)
+function applyFont(big){
+  document.documentElement.classList.toggle("big", big);
+  $("fontBtn").textContent = big ? "Letra normal" : "Agrandar letra";
+}
+try { applyFont(localStorage.getItem("letraGrande") === "1"); } catch { applyFont(false); }
+$("fontBtn").addEventListener("click", () => {
+  const big = !document.documentElement.classList.contains("big");
+  applyFont(big);
+  try { localStorage.setItem("letraGrande", big ? "1" : "0"); } catch {}
+});
 
 // ===== Arranque =====
 if (SUPABASE_URL.includes("TU-PROYECTO") || SUPABASE_ANON_KEY.includes("TU-ANON")) {
@@ -261,97 +279,124 @@ $("loginForm").addEventListener("submit", async (e) => {
   e.preventDefault();
   $("loginError").textContent = "";
   const { error } = await sb.auth.signInWithPassword({ email: $("email").value.trim(), password: $("password").value });
-  if (error) $("loginError").textContent = "No se pudo entrar: revisa el correo y la contraseña.";
+  if (error) $("loginError").textContent = "No se pudo entrar. Revise el correo y la contraseña.";
 });
 $("logoutBtn").addEventListener("click", () => sb.auth.signOut());
 
 // ===== Datos =====
 async function load(){
   const { data, error } = await sb.from("atenciones").select("*").order("fecha", { ascending: false });
-  if (error) { toast("No se pudieron cargar los registros: " + error.message); return; }
+  if (error) { toast("No se pudieron cargar los registros. Intente de nuevo en un momento."); return; }
   rows = data;
   fillLists();
   render();
 }
 
+const uniq = (k) => [...new Set(rows.map(r => r[k]).filter(Boolean))].sort((a,b) => a.localeCompare(b, "es"));
+
+function fillSelect(id, values, allLabel){
+  const sel = $(id), cur = sel.value;
+  sel.innerHTML = `<option value="">${allLabel}</option>` + values.map(v => `<option>${esc(v)}</option>`).join("");
+  sel.value = values.map(String).includes(cur) ? cur : "";
+}
+
 function fillLists(){
-  const uniq = (k) => [...new Set(rows.map(r => r[k]).filter(Boolean))].sort((a,b) => a.localeCompare(b, "es"));
-  const esp = uniq("especialidad");
-  $("espList").innerHTML = esp.map(v => `<option value="${esc(v)}">`).join("");
+  $("espList").innerHTML = uniq("especialidad").map(v => `<option value="${esc(v)}">`).join("");
+  $("servicioList").innerHTML = uniq("servicio").map(v => `<option value="${esc(v)}">`).join("");
   $("lugarList").innerHTML = uniq("lugar").map(v => `<option value="${esc(v)}">`).join("");
   $("medicoList").innerHTML = uniq("medico").map(v => `<option value="${esc(v)}">`).join("");
-  const sel = $("filterEsp"), cur = sel.value;
-  sel.innerHTML = `<option value="">Todas</option>` + esp.map(v => `<option>${esc(v)}</option>`).join("");
-  sel.value = esp.includes(cur) ? cur : "";
+  const years = [...new Set(rows.map(r => r.fecha.slice(0,4)))].sort().reverse();
+  fillSelect("fYear", years, "Todos los años");
+  fillSelect("fServicio", uniq("servicio"), "Todos");
+  fillSelect("fEsp", uniq("especialidad"), "Todas");
+  fillSelect("fLugar", uniq("lugar"), "Todos");
+  fillSelect("fMedico", uniq("medico"), "Todos");
 }
+
+// ===== Filtros =====
+const FILTER_IDS = ["search","fYear","fFrom","fTo","fServicio","fEsp","fLugar","fMedico"];
 
 function filtered(){
   const q = $("search").value.trim().toLowerCase();
-  const esp = $("filterEsp").value;
-  return rows.filter(r => {
+  const year = $("fYear").value, from = $("fFrom").value, to = $("fTo").value;
+  const svc = $("fServicio").value, esp = $("fEsp").value, lugar = $("fLugar").value, med = $("fMedico").value;
+  const out = rows.filter(r => {
+    if (year && !r.fecha.startsWith(year)) return false;
+    if (from && r.fecha < from) return false;
+    if (to && r.fecha > to) return false;
+    if (svc && r.servicio !== svc) return false;
     if (esp && r.especialidad !== esp) return false;
-    if (!q) return true;
-    return [r.lugar, r.servicio, r.especialidad, r.medico, r.notas].some(v => (v || "").toLowerCase().includes(q));
+    if (lugar && r.lugar !== lugar) return false;
+    if (med && r.medico !== med) return false;
+    if (q && ![r.lugar, r.servicio, r.especialidad, r.medico, r.notas].some(v => (v || "").toLowerCase().includes(q))) return false;
+    return true;
   });
+  const asc = $("fOrder").value === "asc";
+  return out.sort((a, b) => asc ? a.fecha.localeCompare(b.fecha) : b.fecha.localeCompare(a.fecha));
+}
+
+FILTER_IDS.forEach(id => $(id).addEventListener(id === "search" ? "input" : "change", render));
+$("fOrder").addEventListener("change", render);
+$("clearBtn").addEventListener("click", () => { FILTER_IDS.forEach(id => $(id).value = ""); $("fOrder").value = "desc"; render(); });
+
+// ===== Fichas =====
+function row(label, value){
+  return value ? `<dt>${label}</dt><dd>${value}</dd>` : "";
 }
 
 function render(){
-  const list = filtered();
-  const isFiltering = $("search").value || $("filterEsp").value;
+  const active = FILTER_IDS.filter(id => $(id).value).length;
 
   if (!rows.length){
     $("count").textContent = "";
-    $("list").innerHTML = `<div class="empty"><h2>Aún no hay atenciones</h2>
-      <p>Registra tu último examen o consulta: fecha, lugar, link del portal y el código que te entregaron.</p>
-      <button class="btn primary" type="button" onclick="openForm()">Registrar atención</button></div>`;
+    $("list").innerHTML = `<div class="empty"><h2>Todavía no hay atenciones guardadas</h2>
+      <p>Para empezar, registre su último examen o consulta. Necesitará la fecha, el lugar y, si se lo entregaron, el link y el código para ver los resultados.</p>
+      <button class="btn primary" type="button" onclick="openForm()">Registrar mi primera atención</button></div>`;
     return;
   }
-  $("count").textContent = isFiltering
-    ? `${list.length} de ${rows.length} atenciones`
-    : `${rows.length} ${rows.length === 1 ? "atención" : "atenciones"}`;
+
+  const list = filtered();
+  $("count").innerHTML = active
+    ? `Mostrando <strong>${list.length}</strong> de ${rows.length} atenciones (hay filtros activos).`
+    : `Tiene <strong>${rows.length}</strong> ${rows.length === 1 ? "atención guardada" : "atenciones guardadas"}.`;
 
   if (!list.length){
-    $("list").innerHTML = `<div class="empty"><h2>Sin resultados</h2><p>Prueba con otra palabra o quita el filtro de especialidad.</p></div>`;
+    $("list").innerHTML = `<div class="empty"><h2>No se encontraron atenciones</h2>
+      <p>Ninguna atención coincide con lo que buscó. Pruebe con otra palabra o quite los filtros.</p>
+      <button class="btn" type="button" onclick="document.getElementById('clearBtn').click()">Quitar todos los filtros</button></div>`;
     return;
   }
 
   let html = "", year = null;
   for (const r of list){
-    const d = fmtDate(r.fecha);
-    if (d.year !== year){
-      if (year !== null) html += "</ol>";
-      year = d.year;
-      html += `<h2 class="year">${year}</h2><ol class="entries">`;
-    }
-    const meta = [r.lugar, r.especialidad, r.medico].filter(Boolean).map(esc).join(", ");
+    const y = r.fecha.slice(0,4);
+    if (y !== year){ year = y; html += `<h2 class="year">Año ${y}</h2>`; }
     const url = safeUrl(r.portal_url);
-    const codeShown = revealed.has(r.id);
-    html += `<li class="entry">
-      <div class="date"><span class="d">${d.day}</span><span class="m">${esc(d.month)}</span></div>
-      <div>
-        <h3>${esc(r.servicio || r.especialidad || "Atención")}</h3>
-        <p class="meta">${meta}</p>
-        ${r.notas ? `<p class="notes">${esc(r.notas)}</p>` : ""}
-        ${r.codigo_acceso ? `<div class="code">Código:
-            <span>${codeShown ? esc(r.codigo_acceso) : "••••••"}</span>
-            <button class="btn small" type="button" data-act="toggle" data-id="${r.id}">${codeShown ? "Ocultar" : "Ver"}</button>
-          </div>` : ""}
-        <div class="actions">
-          ${url ? `<button class="btn primary" type="button" data-act="open" data-id="${r.id}">${r.codigo_acceso ? "Copiar código y abrir portal" : "Abrir portal"}</button>` : ""}
-          ${!url && r.codigo_acceso ? `<button class="btn" type="button" data-act="copy" data-id="${r.id}">Copiar código</button>` : ""}
-          <button class="btn" type="button" data-act="edit" data-id="${r.id}">Editar</button>
-        </div>
+    const shown = revealed.has(r.id);
+    const code = r.codigo_acceso
+      ? `<span class="code-val">${shown ? esc(r.codigo_acceso) : "oculto"}</span>
+         <button class="btn plain" type="button" data-act="toggle" data-id="${r.id}">${shown ? "Ocultar código" : "Mostrar código"}</button>`
+      : "";
+    html += `<article class="card">
+      <p class="when">${esc(longDate(r.fecha))}</p>
+      <h3>${esc(r.servicio || r.especialidad || "Atención médica")}</h3>
+      <dl>
+        ${row("Especialidad", esc(r.especialidad))}
+        ${row("Lugar", esc(r.lugar))}
+        ${row("Médico", esc(r.medico))}
+        ${row("Código", code)}
+        ${row("Notas", r.notas ? `<span class="notes">${esc(r.notas)}</span>` : "")}
+      </dl>
+      <div class="actions">
+        ${url ? `<button class="btn primary" type="button" data-act="open" data-id="${r.id}">Ver resultados en la web</button>` : ""}
+        ${r.codigo_acceso ? `<button class="btn" type="button" data-act="copy" data-id="${r.id}">Copiar código</button>` : ""}
+        <button class="btn" type="button" data-act="edit" data-id="${r.id}">Editar</button>
       </div>
-    </li>`;
+    </article>`;
   }
-  html += "</ol>";
   $("list").innerHTML = html;
 }
 
-$("search").addEventListener("input", render);
-$("filterEsp").addEventListener("change", render);
-
-// Acciones de cada registro
 $("list").addEventListener("click", (e) => {
   const b = e.target.closest("button[data-act]");
   if (!b) return;
@@ -362,7 +407,6 @@ $("list").addEventListener("click", (e) => {
   if (act === "edit") openForm(r);
   if (act === "copy") copyCode(r.codigo_acceso);
   if (act === "open"){
-    // Se abre en el mismo gesto del usuario para que Safari no lo bloquee
     if (r.codigo_acceso) copyCode(r.codigo_acceso, true);
     window.open(safeUrl(r.portal_url), "_blank", "noopener");
   }
@@ -370,8 +414,8 @@ $("list").addEventListener("click", (e) => {
 
 function copyCode(code, opening){
   navigator.clipboard.writeText(code)
-    .then(() => toast(opening ? "Código copiado: pégalo en el portal" : "Código copiado"))
-    .catch(() => toast("No se pudo copiar. Código: " + code));
+    .then(() => toast(opening ? "Se copió el código. En la página que se abrió, péguelo donde se lo pidan." : "Se copió el código."))
+    .catch(() => toast("Su código es: " + code));
 }
 
 // ===== Formulario =====
@@ -415,24 +459,25 @@ $("entryForm").addEventListener("submit", async (e) => {
   $("saveBtn").disabled = false;
   if (error){ $("formError").textContent = "No se guardó: " + error.message; return; }
   $("dlg").close();
-  toast(editingId ? "Cambios guardados" : "Atención registrada");
+  toast(editingId ? "Se guardaron los cambios." : "Se registró la atención.");
   load();
 });
 
 $("deleteBtn").addEventListener("click", async () => {
-  if (!editingId || !confirm("¿Eliminar esta atención? No se puede deshacer.")) return;
+  if (!editingId || !confirm("¿Seguro que quiere eliminar esta atención? No se puede deshacer.")) return;
   const { error } = await sb.from("atenciones").delete().eq("id", editingId);
   if (error){ $("formError").textContent = "No se eliminó: " + error.message; return; }
   $("dlg").close();
-  toast("Atención eliminada");
+  toast("Se eliminó la atención.");
   load();
 });
 
-// ===== Exportar =====
+// ===== Descargar copia (respeta los filtros activos) =====
 $("exportBtn").addEventListener("click", () => {
   const cols = ["fecha","lugar","servicio","especialidad","medico","portal_url","codigo_acceso","notas"];
   const cell = (s) => `"${String(s ?? "").replace(/"/g,'""')}"`;
-  const csv = "\uFEFF" + [cols.join(";"), ...rows.map(r => cols.map(c => cell(r[c])).join(";"))].join("\n");
+  const data = filtered();
+  const csv = "\uFEFF" + [cols.join(";"), ...data.map(r => cols.map(c => cell(r[c])).join(";"))].join("\n");
   const a = document.createElement("a");
   a.href = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
   a.download = `bitacora-salud-${new Date().toISOString().slice(0,10)}.csv`;
