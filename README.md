@@ -25,15 +25,3 @@ PWA (web instalable en iPhone y Android) con Supabase como base de datos y login
 - Código oculto por defecto, con opción de mostrarlo.
 - Exportación a CSV, para que la información no quede amarrada a la app.
 
-## Seguridad: qué protege y qué no
-
-- Las políticas RLS hacen que cada usuario solo pueda leer y modificar sus propias filas. La anon key puede quedar visible en el HTML: es pública por diseño.
-- Los códigos de acceso se guardan **en texto plano** en Supabase. Están protegidos por tu login y por RLS, pero quien tenga acceso de administrador al proyecto podría verlos. El siguiente paso recomendado es cifrarlos en el navegador (WebCrypto, AES-GCM) con una clave que solo tú conozcas.
-- Usa una contraseña robusta y, si puedes, activa MFA en tu cuenta de Supabase.
-
-## Ideas para una v2
-
-- Cifrado del código de acceso en el cliente.
-- Adjuntar PDF o fotos de órdenes y resultados (Supabase Storage).
-- Etiquetas por zona del cuerpo o por tratamiento.
-- Recordatorios de controles.
