@@ -134,6 +134,7 @@ label{display:block;font-weight:700;margin:16px 0 6px}
 label small{font-weight:400;color:var(--muted)}
 .field{width:100%;min-height:52px;padding:10px 12px;border:2px solid var(--line);border-radius:10px;background:var(--surface)}
 textarea.field{min-height:110px;resize:vertical}
+.hint{margin:6px 0 0;color:var(--muted);font-size:.92rem}
 .error{color:var(--danger);margin:12px 0 0;min-height:1.2em;font-weight:700}
 
 dialog{width:min(620px,100vw - 20px);max-height:calc(100dvh - 20px);border:0;border-radius:16px;padding:0;background:var(--surface);color:var(--ink)}
@@ -186,7 +187,7 @@ dialog h2{margin:0 0 4px;font-size:1.4rem}
 
 <div id="loginView" class="login" hidden>
   <h1>Bitácora de salud</h1>
-  <p>Sus atenciones, exámenes y códigos de acceso en un solo lugar.</p>
+  <p>Sus atenciones, exámenes y códigos o passwords en un solo lugar.</p>
   <form id="loginForm">
     <label for="email">Correo</label>
     <input class="field" id="email" type="email" autocomplete="email" required>
@@ -282,9 +283,11 @@ dialog h2{margin:0 0 4px;font-size:1.4rem}
         <datalist id="medicoList"></datalist>
       </div>
     </div>
-    <label for="f_url">Link del portal <small>(donde quedaron los resultados)</small></label>
-    <input class="field" id="f_url" type="url" placeholder="https://…" inputmode="url">
-    <label for="f_codigo">Código de acceso</label>
+    <label for="f_url">Página de resultados <small>(basta con la dirección, por ejemplo: imagenes.clinica.cl)</small></label>
+    <input class="field" id="f_url" type="text" inputmode="url" list="urlList" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="imagenes.clinica.cl">
+    <datalist id="urlList"></datalist>
+    <p class="hint" id="urlHint" hidden></p>
+    <label for="f_codigo">Código o password <small>(el que le dieron para ver los resultados)</small></label>
     <input class="field" id="f_codigo" autocomplete="off" autocapitalize="off" spellcheck="false">
     <label for="f_notas">Notas</label>
     <textarea class="field" id="f_notas" placeholder="Indicaciones, diagnóstico, próximos pasos…"></textarea>
@@ -318,9 +321,21 @@ function toast(msg){
 function longDate(iso){
   return new Date(iso + "T00:00:00").toLocaleDateString("es-CL", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
 }
-function safeUrl(u){
-  try { const x = new URL(u); return (x.protocol === "https:" || x.protocol === "http:") ? x.href : null; }
-  catch { return null; }
+// Acepta "imagenes.clinica.cl", "www.clinica.cl/resultados" o la URL completa.
+function normalizeUrl(input){
+  let s = String(input || "").trim().replace(/\s+/g, "");
+  if (!s) return null;
+  if (!/^https?:\/\//i.test(s)) s = "https://" + s.replace(/^\/+/, "");
+  try {
+    const x = new URL(s);
+    if (!/^https?:$/.test(x.protocol) || !x.hostname.includes(".")) return null;
+    return x.href;
+  } catch { return null; }
+}
+const safeUrl = normalizeUrl;
+// Para mostrar: sin "https://", sin "www." y sin la barra final
+function prettyUrl(u){
+  return String(u || "").replace(/^https?:\/\//i, "").replace(/^www\./i, "").replace(/\/$/, "");
 }
 
 // Tamaño de letra (se recuerda en este dispositivo)
@@ -382,6 +397,8 @@ function fillLists(){
   $("servicioList").innerHTML = uniq("servicio").map(v => `<option value="${esc(v)}">`).join("");
   $("lugarList").innerHTML = uniq("lugar").map(v => `<option value="${esc(v)}">`).join("");
   $("medicoList").innerHTML = uniq("medico").map(v => `<option value="${esc(v)}">`).join("");
+  $("urlList").innerHTML = [...new Set(rows.map(r => r.portal_url).filter(Boolean).map(prettyUrl))]
+    .sort().map(v => `<option value="${esc(v)}">`).join("");
   const years = [...new Set(rows.map(r => r.fecha.slice(0,4)))].sort().reverse();
   fillSelect("fYear", years, "Todos");
   fillSelect("fServicio", uniq("servicio"), "Todos");
@@ -441,7 +458,7 @@ function render(){
   if (!rows.length){
     $("count").textContent = "";
     $("list").innerHTML = `<div class="empty"><h2>Todavía no hay atenciones guardadas</h2>
-      <p>Para empezar, registre su último examen o consulta. Necesitará la fecha, el lugar y, si se lo entregaron, el link y el código para ver los resultados.</p>
+      <p>Para empezar, registre su último examen o consulta. Necesitará la fecha, el lugar y, si se lo entregaron, la página y el código o password para ver los resultados.</p>
       <button class="btn primary" type="button" onclick="openForm()">Registrar mi primera atención</button></div>`;
     return;
   }
@@ -470,7 +487,7 @@ function render(){
     const shown = revealed.has(r.id);
     const code = r.codigo_acceso
       ? `<span class="code-val">${shown ? esc(r.codigo_acceso) : "oculto"}</span>
-         <button class="btn plain" type="button" data-act="toggle" data-id="${r.id}">${shown ? "Ocultar código" : "Mostrar código"}</button>`
+         <button class="btn plain" type="button" data-act="toggle" data-id="${r.id}">${shown ? "Ocultar" : "Mostrar"}</button>`
       : "";
     const both = url && r.codigo_acceso;
     html += `<article class="card">
@@ -485,11 +502,12 @@ function render(){
         ${row("Especialidad", esc(r.especialidad))}
         ${row("Lugar", esc(r.lugar))}
         ${row("Médico", esc(r.medico))}
-        ${row("Código", code)}
+        ${row("Página", url ? esc(prettyUrl(url)) : "")}
+        ${row("Código o password", code)}
         ${row("Notas", r.notas ? `<span class="notes">${esc(r.notas)}</span>` : "")}
       </dl>
       <div class="actions">
-        ${r.codigo_acceso ? `<button class="btn primary" type="button" data-act="copy" data-id="${r.id}">${both ? "1. Copiar código" : "Copiar código"}</button>` : ""}
+        ${r.codigo_acceso ? `<button class="btn primary" type="button" data-act="copy" data-id="${r.id}">${both ? "1. Copiar código o password" : "Copiar código o password"}</button>` : ""}
         ${url ? `<button class="btn${r.codigo_acceso ? "" : " primary"}" type="button" data-act="open" data-id="${r.id}">${both ? "2. Ir a ver resultados" : "Ver resultados en la web"}</button>` : ""}
       </div>
     </article>`;
@@ -538,8 +556,8 @@ $("list").addEventListener("click", (e) => {
 
 function copyCode(code, opening){
   navigator.clipboard.writeText(code)
-    .then(() => toast("Se copió el código. Ahora entre a ver los resultados y péguelo donde se lo pidan."))
-    .catch(() => toast("Su código es: " + code));
+    .then(() => toast("Se copió el código o password. Ahora entre a ver los resultados y péguelo donde se lo pidan."))
+    .catch(() => toast("Su código o password es: " + code));
 }
 
 // ===== Formulario =====
@@ -553,12 +571,26 @@ function openForm(r){
   $("f_servicio").value = r?.servicio || "";
   $("f_lugar").value = r?.lugar || "";
   $("f_medico").value = r?.medico || "";
-  $("f_url").value = r?.portal_url || "";
+  $("f_url").value = r?.portal_url ? prettyUrl(r.portal_url) : "";
+  $("urlHint").hidden = true;
   $("f_codigo").value = r?.codigo_acceso || "";
   $("f_notas").value = r?.notas || "";
   $("dlg").showModal();
 }
 window.openForm = openForm;
+
+$("f_lugar").addEventListener("change", () => {
+  if ($("f_url").value.trim()) return;
+  const lugar = $("f_lugar").value.trim().toLowerCase();
+  const prev = rows.filter(r => r.portal_url && (r.lugar || "").toLowerCase() === lugar)
+                   .sort((a, b) => b.fecha.localeCompare(a.fecha))[0];
+  if (prev){
+    $("f_url").value = prettyUrl(prev.portal_url);
+    $("urlHint").textContent = "Completamos la página que usó la última vez en este lugar. Puede cambiarla si es otra.";
+    $("urlHint").hidden = false;
+  }
+});
+$("f_url").addEventListener("input", () => { $("urlHint").hidden = true; });
 $("addBtn").addEventListener("click", () => openForm());
 $("cancelBtn").addEventListener("click", () => $("dlg").close());
 
@@ -571,10 +603,15 @@ $("entryForm").addEventListener("submit", async (e) => {
     servicio: v("f_servicio"),
     lugar: v("f_lugar"),
     medico: v("f_medico"),
-    portal_url: v("f_url"),
+    portal_url: normalizeUrl($("f_url").value),
     codigo_acceso: v("f_codigo"),
     notas: v("f_notas"),
   };
+  if ($("f_url").value.trim() && !payload.portal_url){
+    $("formError").textContent = "Revise la página de resultados. Debe verse parecido a: imagenes.clinica.cl";
+    $("f_url").focus();
+    return;
+  }
   $("saveBtn").disabled = true;
   const q = editingId
     ? sb.from("atenciones").update(payload).eq("id", editingId)
