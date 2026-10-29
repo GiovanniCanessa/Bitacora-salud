@@ -18,6 +18,7 @@
 :root{
   --bg:#F2F5F7; --surface:#FFFFFF; --ink:#111A22; --muted:#46535E;
   --line:#B9C6D0; --accent:#1F4E79; --accent-ink:#FFFFFF; --soft:#E3ECF3; --danger:#9E2A22;
+  --ok:#1E6B3A; --ok-ink:#FFFFFF;
   --fs:19px;
   color-scheme: light;
   box-sizing:border-box;
@@ -27,7 +28,7 @@
 @media (prefers-color-scheme: dark){
   :root{
     --bg:#0F1820; --surface:#19252F; --ink:#F1F5F8; --muted:#B4C2CD;
-    --line:#3A4B58; --accent:#8CBBE3; --accent-ink:#0F1820; --soft:#223443; --danger:#F08A80;
+    --line:#3A4B58; --accent:#8CBBE3; --accent-ink:#0F1820; --soft:#223443; --danger:#F08A80; --ok:#7BD198; --ok-ink:#0F1820;
     color-scheme: dark;
   }
 }
@@ -57,6 +58,7 @@ header.top h1{font-size:1.7rem;margin:0;line-height:1.2}
 /* Botones grandes */
 .btn{min-height:52px;border:2px solid var(--line);background:var(--surface);border-radius:12px;padding:10px 18px;cursor:pointer;font-weight:700}
 .btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.ok{background:var(--ok);border-color:var(--ok);color:var(--ok-ink)}
 .btn.danger{color:var(--danger);border-color:var(--danger)}
 .btn.big{width:100%;font-size:1.1rem;min-height:60px}
 .btn.plain{border-color:transparent;background:none;text-decoration:underline;font-weight:400;color:var(--muted);min-height:44px;padding:8px 10px}
@@ -75,8 +77,14 @@ header.top h1{font-size:1.7rem;margin:0;line-height:1.2}
 
 .date-box{border:2px solid var(--line);border-radius:12px;padding:6px 14px 14px;margin:0;min-width:0}
 .date-box legend{font-weight:700;padding:0 6px}
-.date-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px 14px}
-.filter-actions{display:flex;align-items:flex-end}
+.date-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px 14px}
+.search-actions{display:flex;flex-direction:column;align-items:stretch;gap:22px;margin-top:6px}
+.search-actions .btn.ok{min-height:56px;font-size:1.1rem}
+.clear-link{align-self:center;border:0;background:none;color:var(--muted);text-decoration:underline;cursor:pointer;padding:8px 12px;font-size:.95rem}
+@media (min-width:900px){
+  .search-actions{flex-direction:row-reverse;justify-content:space-between;align-items:center}
+  .search-actions .btn.ok{min-width:220px;min-height:46px;font-size:1rem}
+}
 .filter-grid > *,.date-grid > *{min-width:0}
 .filter-grid select,.date-grid select{max-width:100%}
 .list-bar{display:flex;justify-content:space-between;align-items:center;gap:10px 16px;flex-wrap:wrap;margin:14px 2px 6px}
@@ -84,7 +92,7 @@ header.top h1{font-size:1.7rem;margin:0;line-height:1.2}
 .order{display:flex;align-items:center;gap:10px}
 .order label{margin:0}
 .order select{min-height:48px;padding:8px 12px;border:2px solid var(--line);border-radius:10px;background:var(--surface)}
-@media (max-width:560px){.order{width:100%}.order select{flex:1}}
+@media (max-width:560px){.order{flex:1 1 100%;min-width:0}.order select{flex:1;min-width:0}}
 @media (min-width:900px){.order select{min-height:40px;padding:6px 10px}}
 .count strong{color:var(--accent)}
 
@@ -204,29 +212,18 @@ dialog h2{margin:0 0 4px;font-size:1.4rem}
 
   <details class="filters" id="filtersBox">
     <summary>Buscar</summary>
-    <div class="filter-grid">
+    <form class="filter-grid" id="searchForm">
       <fieldset class="full date-box">
         <legend>Fecha</legend>
         <div class="date-grid">
-          <div>
-            <label for="fDateMode">Buscar por</label>
-            <select id="fDateMode">
-              <option value="">Cualquier fecha</option>
-              <option value="month">Un mes</option>
-              <option value="year">Un año</option>
-              <option value="range">Entre dos fechas</option>
-            </select>
-          </div>
-          <div data-mode="month"><label for="fMonth">Mes</label>
-            <select id="fMonth"><option value="">Cualquier mes</option>
+          <div><label for="fYear">Año</label><select id="fYear"><option value="">Todos</option></select></div>
+          <div><label for="fMonth">Mes</label>
+            <select id="fMonth"><option value="">Todos</option>
               <option value="01">enero</option><option value="02">febrero</option><option value="03">marzo</option>
               <option value="04">abril</option><option value="05">mayo</option><option value="06">junio</option>
               <option value="07">julio</option><option value="08">agosto</option><option value="09">septiembre</option>
               <option value="10">octubre</option><option value="11">noviembre</option><option value="12">diciembre</option>
             </select></div>
-          <div data-mode="month year"><label for="fYear">Año</label><select id="fYear"><option value="">Cualquier año</option></select></div>
-          <div data-mode="range"><label for="fFrom">Desde</label><input id="fFrom" type="date"></div>
-          <div data-mode="range"><label for="fTo">Hasta</label><input id="fTo" type="date"></div>
         </div>
       </fieldset>
       <div><label for="fServicio">Servicio o examen</label><select id="fServicio"><option value="">Todos</option></select></div>
@@ -235,10 +232,13 @@ dialog h2{margin:0 0 4px;font-size:1.4rem}
       <div><label for="fMedico">Médico</label><select id="fMedico"><option value="">Todos</option></select></div>
       <div class="full">
         <label for="search">Buscar una palabra</label>
-        <input id="search" type="search" placeholder="Por ejemplo: rodilla">
+        <input id="search" type="search" placeholder="Por ejemplo: rodilla" enterkeyhint="search">
       </div>
-      <div class="filter-actions"><button class="btn" id="clearBtn" type="button" style="width:100%">Quitar todos los filtros</button></div>
-    </div>
+      <div class="full search-actions">
+        <button class="btn ok" id="searchBtn" type="submit">Buscar</button>
+        <button class="clear-link" id="clearBtn" type="button">Quitar filtros</button>
+      </div>
+    </form>
   </details>
 
   <div class="list-bar">
@@ -383,43 +383,32 @@ function fillLists(){
   $("lugarList").innerHTML = uniq("lugar").map(v => `<option value="${esc(v)}">`).join("");
   $("medicoList").innerHTML = uniq("medico").map(v => `<option value="${esc(v)}">`).join("");
   const years = [...new Set(rows.map(r => r.fecha.slice(0,4)))].sort().reverse();
-  fillSelect("fYear", years, "Cualquier año");
+  fillSelect("fYear", years, "Todos");
   fillSelect("fServicio", uniq("servicio"), "Todos");
   fillSelect("fEsp", uniq("especialidad"), "Todas");
   fillSelect("fLugar", uniq("lugar"), "Todos");
   fillSelect("fMedico", uniq("medico"), "Todos");
 }
 
-// ===== Filtros =====
-const FILTER_IDS = ["search","fDateMode","fMonth","fYear","fFrom","fTo","fServicio","fEsp","fLugar","fMedico"];
-const DATE_FIELDS = ["fMonth","fYear","fFrom","fTo"];
+// ===== Filtros (se aplican al presionar Buscar) =====
+const FILTER_IDS = ["fYear","fMonth","fServicio","fEsp","fLugar","fMedico","search"];
+let applied = {};
 
-function syncDateFields(){
-  const mode = $("fDateMode").value;
-  document.querySelectorAll(".date-grid [data-mode]").forEach(el => {
-    el.hidden = !mode || !el.dataset.mode.split(" ").includes(mode);
-  });
-  // Limpiar campos que no aplican al modo elegido
-  if (mode !== "month") $("fMonth").value = "";
-  if (mode !== "month" && mode !== "year") $("fYear").value = "";
-  if (mode !== "range") { $("fFrom").value = ""; $("fTo").value = ""; }
+function readFilters(){
+  const f = {};
+  FILTER_IDS.forEach(id => f[id] = $(id).value.trim());
+  return f;
 }
-$("fDateMode").addEventListener("change", syncDateFields);
-syncDateFields();
 
 function filtered(){
-  const q = $("search").value.trim().toLowerCase();
-  const month = $("fMonth").value, year = $("fYear").value, from = $("fFrom").value, to = $("fTo").value;
-  const svc = $("fServicio").value, esp = $("fEsp").value, lugar = $("fLugar").value, med = $("fMedico").value;
+  const f = applied, q = (f.search || "").toLowerCase();
   const out = rows.filter(r => {
-    if (year && r.fecha.slice(0,4) !== year) return false;
-    if (month && r.fecha.slice(5,7) !== month) return false;
-    if (from && r.fecha < from) return false;
-    if (to && r.fecha > to) return false;
-    if (svc && r.servicio !== svc) return false;
-    if (esp && r.especialidad !== esp) return false;
-    if (lugar && r.lugar !== lugar) return false;
-    if (med && r.medico !== med) return false;
+    if (f.fYear && r.fecha.slice(0,4) !== f.fYear) return false;
+    if (f.fMonth && r.fecha.slice(5,7) !== f.fMonth) return false;
+    if (f.fServicio && r.servicio !== f.fServicio) return false;
+    if (f.fEsp && r.especialidad !== f.fEsp) return false;
+    if (f.fLugar && r.lugar !== f.fLugar) return false;
+    if (f.fMedico && r.medico !== f.fMedico) return false;
     if (q && ![r.lugar, r.servicio, r.especialidad, r.medico, r.notas].some(v => (v || "").toLowerCase().includes(q))) return false;
     return true;
   });
@@ -427,9 +416,19 @@ function filtered(){
   return out.sort((a, b) => asc ? a.fecha.localeCompare(b.fecha) : b.fecha.localeCompare(a.fecha));
 }
 
-FILTER_IDS.forEach(id => $(id).addEventListener(id === "search" ? "input" : "change", render));
+$("searchForm").addEventListener("submit", (e) => {
+  e.preventDefault();
+  applied = readFilters();
+  render();
+  $("search").blur();
+  $("count").scrollIntoView({ behavior: "smooth", block: "start" });
+});
+$("clearBtn").addEventListener("click", () => {
+  FILTER_IDS.forEach(id => $(id).value = "");
+  applied = {};
+  render();
+});
 $("fOrder").addEventListener("change", render);
-$("clearBtn").addEventListener("click", () => { FILTER_IDS.forEach(id => $(id).value = ""); syncDateFields(); render(); });
 
 // ===== Fichas =====
 function row(label, value){
@@ -437,8 +436,7 @@ function row(label, value){
 }
 
 function render(){
-  const dateActive = DATE_FIELDS.some(id => $(id).value);
-  const active = FILTER_IDS.filter(id => id !== "fDateMode" && !DATE_FIELDS.includes(id) && $(id).value).length + (dateActive ? 1 : 0);
+  const active = FILTER_IDS.filter(id => applied[id]).length;
 
   if (!rows.length){
     $("count").textContent = "";
